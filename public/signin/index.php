@@ -1,5 +1,47 @@
 <?php
+
+use App\repositories\UserRepository;
+
     session_start();
+    require_once('../../src/repositories/db.php');
+    require_once('../../vendor/autoload.php');
+
+
+    if($_SERVER['REQUEST_METHOD'] == 'POST'){
+        $userRep = new UserRepository($pdo);
+        
+        $errors = '';
+
+        if(empty($_POST['email'])){
+            $errors += 'Введите почту!<br>';
+        }
+        if(empty($_POST['password'])){
+            $errors += 'Введите пароль!';
+        }
+
+        if(empty($errors)){
+            try{
+                $user = $userRep->getByEmail($_POST['email']);
+
+                if(!isset($user)){
+                    $errors += 'Такой пользователь не найден!';
+                }
+                else{
+                    if(!password_verify($_POST['password'], $user->password)){
+                        $errors += 'Неверный пароль!';
+                    }
+                    else{
+                        $_SESSION['user'] = $user->id;
+                        header('Location: ../main');
+                    }  
+                }
+
+            }
+            catch(Exception $e){
+                $errors += 'Произошла ошибка на сервере!';
+            }
+        }
+    }
 ?>
 
 <!DOCTYPE html>

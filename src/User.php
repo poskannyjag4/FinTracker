@@ -8,11 +8,8 @@ class User
 
     public array $categories = [];
 
-    public function __construct(
-        public string $name,
-        public string $email,
-        public string $password,
-        public ?int $id = null,
-    ) {
-    }
+    public string $name;
+    public string $email;
+    public string $password;
+    public ?int $id;
 }
